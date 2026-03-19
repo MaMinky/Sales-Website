@@ -33,20 +33,16 @@ public class OrderService {
 
         // 2. Lưu chi tiết từng món và CẬP NHẬT KHO
         for (CartItem item : cartService.getItems()) {
-            // Lấy sản phẩm từ DB để cập nhật số lượng
             Product product = productRepository.findById(item.getProductId())
                     .orElseThrow(() -> new RuntimeException("Sản phẩm không tồn tại"));
 
-            // Kiểm tra kho
             if (product.getQuantity() < item.getQuantity()) {
                 throw new RuntimeException("Sản phẩm " + product.getName() + " không đủ hàng!");
             }
 
-            // Trừ số lượng tồn kho
             product.setQuantity(product.getQuantity() - item.getQuantity());
             productRepository.save(product);
 
-            // Lưu OrderItem
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(order);
             orderItem.setProduct(product);
